@@ -1,21 +1,16 @@
 package com.phonegap.parsepushplugin;
 
-import com.parse.ParsePushBroadcastReceiver;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.app.PendingIntent;
 import android.app.Notification;
 import android.app.NotificationManager;
-
-import android.support.v4.app.NotificationCompat;
-
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import org.json.JSONObject;
+import com.parse.ParsePushBroadcastReceiver;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
@@ -30,7 +25,7 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 	protected void onPushReceive(Context context, Intent intent) {
 		Log.d(LOGTAG, "onPushReceive - context: " + context);
 		
-		if(!ParsePushPlugin.isInForeground()){
+		if(!com.phonegap.parsepushplugin.ParsePushPlugin.isInForeground()){
 			//
 			// only create entry for notification tray if plugin/application is
 			// not running in foreground.
@@ -43,7 +38,7 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		
 	    //
 	    // relay the push notification data to the javascript
-		ParsePushPlugin.jsCallback( getPushData(intent) );
+		com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent));
 	}
 	
 	@Override
@@ -74,7 +69,7 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
         //
 	    // relay the push notification data to the javascript in case the
         // app is already running when this push is open.
-		ParsePushPlugin.jsCallback(getPushData(intent), "OPEN");
+		com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent), "OPEN");
     }
 	
 	@Override
@@ -109,7 +104,8 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		       .setNumber(nextCount(pnTag))
 		       .setContentIntent(contentIntent)
 		       .setDeleteIntent(deleteIntent)
-	           .setAutoCancel(true);
+	           .setAutoCancel(true)
+		       .setDefaults(Notification.DEFAULT_SOUND);
     
 	    return builder.build();
 	}
