@@ -64,44 +64,6 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent), "OPEN");
     }
 	
-	@Override
-	protected Notification getNotification(Context context, Intent intent){
-		JSONObject pnData = getPushData(intent);
-		String pnTag = getNotificationTag(context, pnData);
-		
-		Intent cIntent = new Intent(ACTION_PUSH_OPEN);
-		Intent dIntent = new Intent(ACTION_PUSH_DELETE);
-		
-		cIntent.putExtras(intent).setPackage(context.getPackageName());
-		dIntent.putExtras(intent).setPackage(context.getPackageName());
-		
-		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0, cIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		PendingIntent deleteIntent  = PendingIntent.getBroadcast(context, 0, dIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-		
-		if(pnData.has("title")){
-			builder.setTicker(pnData.optString("title")).setContentTitle(pnData.optString("title"));
-		} else if(pnData.has("alert")){
-			builder.setTicker(pnTag).setContentTitle(pnTag);
-		}
-		
-		if(pnData.has("alert")){
-			builder.setContentText(pnData.optString("alert"));
-		}
-		
-		builder.setSmallIcon(getSmallIconId(context, intent))
-		       .setLargeIcon(getLargeIcon(context, intent))
-		       .setNumber(nextCount(pnTag))
-		       .setContentIntent(contentIntent)
-		       .setDeleteIntent(deleteIntent)
-	           .setAutoCancel(true)
-		       .setDefaults(Notification.DEFAULT_SOUND);
-    
-	    return builder.build();
-	}
-	
 	private static JSONObject getPushData(Intent intent){
 		JSONObject pnData = null;
 		try {
