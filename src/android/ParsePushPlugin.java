@@ -31,6 +31,8 @@ public class ParsePushPlugin extends CordovaPlugin {
     //////private static String gECB;
     private static CordovaWebView gWebView;
     private static boolean gForeground = false;
+    private static boolean isDestroy = false;
+
 
     public static final String LOGTAG = "ParsePushPlugin";
 
@@ -133,18 +135,23 @@ public class ParsePushPlugin extends CordovaPlugin {
     	/////gECB = null;
     	gWebView = this.webView;
     	gForeground = true;
+        isDestroy = false;
+        Log.d(LOGTAG, "IG:: inside pluginInitialize, app isDestroy: " + isDestroy);
     }
 
     @Override
     public void onPause(boolean multitasking) {
         super.onPause(multitasking);
         gForeground = false;
+        Log.d(LOGTAG, "IG:: inside onPause, app isDestroy: " + isDestroy);
     }
 
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
         gForeground = true;
+        isDestroy = false;
+        Log.d(LOGTAG, "IG:: inside onResume, app isDestroy: " + isDestroy);
     }
 
 
@@ -153,11 +160,16 @@ public class ParsePushPlugin extends CordovaPlugin {
     	/////gECB = null;
     	gWebView = null;
     	gForeground = false;
-
-    	super.onDestroy();
+        isDestroy = true;
+        Log.d(LOGTAG, "IG:: inside onDestroy, app isDestroy: " + isDestroy);
+        super.onDestroy();
     }
 
     public static boolean isInForeground(){
       return gForeground;
+    }
+
+    public static boolean isDestroy() {
+        return isDestroy;
     }
 }

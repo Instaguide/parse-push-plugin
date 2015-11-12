@@ -28,9 +28,10 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
         NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notifManager.notify(getNotificationTag(context, intent), 0, getNotification(context, intent));
 
-	    //
-	    // relay the push notification data to the javascript
-		com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent));
+		if (!com.phonegap.parsepushplugin.ParsePushPlugin.isDestroy()) {
+			// relay the push notification data to the javascript
+			com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent));
+		}
 	}
 	
 	@Override
@@ -57,11 +58,12 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
         }
         
         context.startActivity(activityIntent);
-        
-        //
-	    // relay the push notification data to the javascript in case the
-        // app is already running when this push is open.
-		com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent), "OPEN");
+
+		if (!com.phonegap.parsepushplugin.ParsePushPlugin.isDestroy()) {
+			// relay the push notification data to the javascript in case the
+			// app is already running when this push is open.
+			com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent), "OPEN");
+		}
     }
 	
 	private static JSONObject getPushData(Intent intent){
