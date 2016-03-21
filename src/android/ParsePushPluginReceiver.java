@@ -5,14 +5,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.ionicframework.instaguide321604.MainActivity;
+import com.ionicframework.instaguide321604.R;
 import com.parse.ParsePushBroadcastReceiver;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
+import java.util.Random;
 
 
 public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
@@ -35,6 +43,49 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		if (!com.phonegap.parsepushplugin.ParsePushPlugin.isDestroy()) {
 			// relay the push notification data to the javascript
 			com.phonegap.parsepushplugin.ParsePushPlugin.jsCallback(getPushData(intent));
+		}
+	}
+	@Override
+	protected Notification getNotification(Context context, Intent intent) {
+		JSONObject pushData = getPushData(intent);
+		if(pushData != null && (pushData.has("alert") || pushData.has("title"))) {
+			String title = pushData.optString("title", "Instaguide");
+			String alert = pushData.optString("alert", "Notification received.");
+			String tickerText = String.format(Locale.getDefault(), "%s: %s", new Object[]{title, alert});
+			Bundle extras = intent.getExtras();
+			Random random = new Random();
+			int contentIntentRequestCode = random.nextInt();
+			int deleteIntentRequestCode = random.nextInt();
+			String packageName = context.getPackageName();
+			Intent contentIntent = new Intent("com.parse.push.intent.OPEN");
+			contentIntent.putExtras(extras);
+			contentIntent.setPackage(packageName);
+			Intent deleteIntent = new Intent("com.parse.push.intent.DELETE");
+			deleteIntent.putExtras(extras);
+			deleteIntent.setPackage(packageName);
+			PendingIntent pContentIntent = PendingIntent.getBroadcast(context, contentIntentRequestCode, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pDeleteIntent = PendingIntent.getBroadcast(context, deleteIntentRequestCode, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			NotificationCompat.Builder parseBuilder = new NotificationCompat.Builder(context);
+			Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.icon);
+
+			parseBuilder.setContentTitle(title).setContentText(alert).setTicker(tickerText)
+					.setSmallIcon(R.drawable.icon_bw)
+					.setLargeIcon(icon)
+					.setContentIntent(pContentIntent).setDeleteIntent(pDeleteIntent).setAutoCancel(true).setDefaults(-1);
+			if (alert != null && alert.length() > 38) {
+
+				NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle();
+
+				style.bigText(alert);
+				style.setBigContentTitle(title).setSummaryText("Instaguide");
+				parseBuilder.setStyle(style);
+
+				parseBuilder.setStyle(style);
+			}
+			return parseBuilder.build();
+		} else {
+			return null;
 		}
 	}
 
