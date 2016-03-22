@@ -38,8 +38,8 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		Log.d(LOGTAG, "onPushReceive - context: " + context);
 
         NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		String notificationTag = getNotificationTag(context, intent);
-		notifManager.notify(notificationTag, notificationTag.hashCode(), getNotification(context, intent));
+		String alert = getNotificationTagAlert(context, intent);
+		notifManager.notify(getNotificationTag(context, intent), alert.hashCode(), getNotification(context, intent));
 
 		if (!com.phonegap.parsepushplugin.ParsePushPlugin.isDestroy()) {
 			// relay the push notification data to the javascript
@@ -154,6 +154,10 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 
 	private static String getNotificationTag(Context context, Intent intent){
 		return getPushData(intent).optString("title", getAppName(context));
+	}
+
+	private static String getNotificationTagAlert(Context context, Intent intent){
+		return getPushData(intent).optString("alert", "Notification received.");
 	}
 
 	private static String getNotificationTag(Context context, JSONObject pnData){
