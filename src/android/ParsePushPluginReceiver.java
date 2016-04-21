@@ -107,7 +107,9 @@ public class ParsePushPluginReceiver extends ParsePushBroadcastReceiver
 		if (pnData.has(PAYLOAD)) {
 			JSONObject payload = pnData.optJSONObject(PAYLOAD);
 			activityIntent.putExtra(MainActivity.REDIRECT_URI, payload.optString(MainActivity.REDIRECT_URI));
-			if (payload.has(PARAM)) {
+			if (payload.has("params")) {
+				activityIntent.putExtra("params", payload.optString("params"));
+			}  else if (payload.has(PARAM)) {
 				JSONObject param = payload.optJSONObject(PARAM);
 				if (param.has(MainActivity.QUERY_ID)) {
 					activityIntent.putExtra(MainActivity.QUERY_ID, param.optString(MainActivity.QUERY_ID));
